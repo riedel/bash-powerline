@@ -89,7 +89,7 @@ __powerline() {
     # colors in the prompt accordingly.
     if [ $? -eq 0 ] 
     then
-      local EXIT=""
+      local EXIT="${FG_12}"
     else
       local EXIT="${BOLD}${FG_01}"
     fi
