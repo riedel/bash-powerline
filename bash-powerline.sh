@@ -63,7 +63,9 @@ __powerline() {
   
   __git_info() {
     [ -x "$(which git)" ] || return    # git not found
-  
+ 
+    [ -d "${PWD}/.git" ] || return
+
     # get current branch name or short SHA1 hash for detached head
     local branch="$(git symbolic-ref --short HEAD 2>/dev/null || git describe --tags --always 2>/dev/null)"
     [ -n "$branch" ] || return  # git branch not found
