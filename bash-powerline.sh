@@ -100,9 +100,9 @@ __powerline() {
 
     if [[ ${EUID} == 0 ]]
     then
-	PS1+="${BG_09}${FG_15}${BOLD}\h${FG_09}${BG_15}${PS_DELIM}${RESET}"
+	PS1+="${BG_09}${FG_15}${BOLD}\h${RESET}${FG_09}${BG_15}${PS_DELIM}${RESET}"
     else
-	PS1+="${BG_10}${FG_00}${BOLD}\h${FG_10}${BG_15}${PS_DELIM}${RESET}"
+	PS1+="${BG_10}${FG_00}${BOLD}\h${RESET}${FG_10}${BG_15}${PS_DELIM}${RESET}"
     fi
 
     PS1+="${BG_15}${FG_12} \w ${RESET}"
