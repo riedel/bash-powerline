@@ -2,11 +2,12 @@
 
 GIT_CHECK="/usr/local/bin/git-check"
 GIT_INFO="/usr/local/bin/git-info"
+PWDS="/usr/local/bin/pwds"
 
-# Unicode symbols
+PWD_LENGTH=25
+
 PS_DELIM=''
 
-# Colorscheme
 FG_LRED="\[$(tput setaf 9)\]"
 FG_LGRN="\[$(tput setaf 10)\]"
 FG_LBLU="\[$(tput setaf 12)\]"
@@ -29,7 +30,7 @@ else
   PS1+="${BG_LGRN}${FG_WHITE}${BOLD}\h${RESET}${FG_LGRN}${BG_WHITE}${PS_DELIM}${RESET}"
 fi
 
-PS1+="${BG_WHITE}${FG_LBLU} \w ${RESET}"
+PS1+="${BG_WHITE}${FG_LBLU} \$(${PWDS} \${PWD} ${PWD_LENGTH}) ${RESET}"
 
 PS1+="\$(RET=\$?; if \$(/usr/local/bin/git-check); then echo -n \"${FG_WHITE}${BG_LBLU}${PS_DELIM}${FG_WHITE}${BG_LBLU} \$(/usr/local/bin/git-info) ${RESET}${FG_LBLU}${PS_DELIM}${RESET} \"; else echo -n \"${RESET}${FG_WHITE}${PS_DELIM}${RESET} \"; fi; if [[ \${RET} == 0 ]]; then echo -n \"${FG_LBLU}\";else echo -n \"${FG_LRED}\"; fi)"
 
