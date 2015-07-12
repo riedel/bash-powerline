@@ -8,31 +8,32 @@ PWD_LENGTH=25
 
 PS_DELIM=''
 
-FG_LRED="\[$(tput setaf 9)\]"
-FG_LGRN="\[$(tput setaf 10)\]"
-FG_LBLU="\[$(tput setaf 12)\]"
-FG_WHITE="\[$(tput setaf 15)\]"
+FG_LRED='\[\e[91m\]'
+FG_GRN='\[\e[32m\]'
+FG_LBLU='\[\e[94m\]'
+FG_WHT='\[\e[97m\]'
 
-BG_LRED="\[$(tput setab 9)\]"
-BG_LGRN="\[$(tput setab 10)\]"
-BG_LBLU="\[$(tput setab 12)\]"
-BG_WHITE="\[$(tput setab 15)\]"
+BG_LRED='\[\e[101m\]'
+BG_GRN='\[\e[42m\]'
+BG_LBLU='\[\e[104m\]'
+BG_WHT='\[\e[107m\]'
 
-RESET="\[$(tput sgr0)\]"
-BOLD="\[$(tput bold)\]"
+RESET='\[\e[0m\]'
+INVERT='\[\e[7m\]'
+BOLD='\[\e[1m\]'
 
 PS1=""
 
 if [[ ${EUID} == 0 ]]
 then
-  PS1+="${BG_LRED}${FG_WHITE}${BOLD}\h${RESET}${FG_LRED}${BG_WHITE}${PS_DELIM}${RESET}"
+  PS1+="${BG_LRED}${FG_WHT}\h${BG_WHT}${FG_LRED}${PS_DELIM}"
 else
-  PS1+="${BG_LGRN}${FG_WHITE}${BOLD}\h${RESET}${FG_LGRN}${BG_WHITE}${PS_DELIM}${RESET}"
+  PS1+="${BG_GRN}${FG_WHT}\h${BG_WHT}${FG_GRN}${PS_DELIM}"
 fi
 
-PS1+="${BG_WHITE}${FG_LBLU} \$(${PWDS} \${PWD} ${PWD_LENGTH}) ${RESET}"
+PS1+="${BG_WHT}${FG_LBLU} \$(${PWDS} \"\${PWD}\" ${PWD_LENGTH}) ${RESET}"
 
-PS1+="\$(RET=\$?; if \$(/usr/local/bin/git-check); then echo -n \"${FG_WHITE}${BG_LBLU}${PS_DELIM}${FG_WHITE}${BG_LBLU} \$(/usr/local/bin/git-info) ${RESET}${FG_LBLU}${PS_DELIM}${RESET} \"; else echo -n \"${RESET}${FG_WHITE}${PS_DELIM}${RESET} \"; fi; if [[ \${RET} == 0 ]]; then echo -n \"${FG_LBLU}\";else echo -n \"${FG_LRED}\"; fi)"
+PS1+="\$(RET=\$?; if \$(/usr/local/bin/git-check); then echo -n \"${FG_WHT}${BG_LBLU}${PS_DELIM}${FG_WHT}${BG_LBLU} \$(/usr/local/bin/git-info) ${RESET}${FG_LBLU}${PS_DELIM}${RESET} \"; else echo -n \"${RESET}${FG_WHT}${PS_DELIM}${RESET} \"; fi; if [[ \${RET} == 0 ]]; then echo -n \"${FG_LBLU}\";else echo -n \"${FG_LRED}\"; fi)"
 
 if [[ ${EUID} == 0 ]]
 then
@@ -44,6 +45,6 @@ fi
 PS1+="${RESET} "
 
 unset GIT_CHECK GIT_INFO PS_DELIM 
-unset FG_LRED FG_LGRN FG_LBLU FG_WHITE
-unset BG_LRED BG_LGRN BG_LBLU BG_WHITE
-unset RESET BOLD 
+unset FG_LRED FG_GRN FG_LBLU FG_WHT FG_BWHT
+unset BG_LRED BG_GRN BG_LBLU BG_WHT
+unset RESET 
