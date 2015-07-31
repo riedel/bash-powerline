@@ -31,9 +31,7 @@ else
   PS1+="${BG_GRN}${FG_WHT}\h${BG_WHT}${FG_GRN}${PS_DELIM}"
 fi
 
-PS1+="${BG_WHT}${FG_LBLU} \$(${PWDS} \"\${PWD}\" ${PWD_LENGTH}) ${RESET}"
-
-PS1+="\$(RET=\$?; if \$(/usr/local/bin/git-check); then echo -n \"${FG_WHT}${BG_LBLU}${PS_DELIM}${FG_WHT}${BG_LBLU} \$(/usr/local/bin/git-info) ${RESET}${FG_LBLU}${PS_DELIM}${RESET} \"; else echo -n \"${RESET}${FG_WHT}${PS_DELIM}${RESET} \"; fi; if [[ \${RET} == 0 ]]; then echo -n \"${FG_LBLU}\";else echo -n \"${FG_LRED}\"; fi)"
+PS1+="\$(RET=\$?; echo -n \"${BG_WHT}${FG_LBLU} \$(${PWDS} \"\${PWD}\" ${PWD_LENGTH}) ${RESET}\" ; if \$(/usr/local/bin/git-check); then echo -n \"${FG_WHT}${BG_LBLU}${PS_DELIM}${FG_WHT}${BG_LBLU} \$(/usr/local/bin/git-info) ${RESET}${FG_LBLU}${PS_DELIM}${RESET} \"; else echo -n \"${RESET}${FG_WHT}${PS_DELIM}${RESET} \"; fi; if [[ \${RET} == 0 ]]; then echo -n \"${FG_LBLU}\";else echo -n \"${FG_LRED}\"; fi)"
 
 if [[ ${EUID} == 0 ]]
 then
