@@ -6,7 +6,12 @@ PWDS="/usr/local/bin/pwds"
 
 PWD_LENGTH=25
 
-PS_DELIM=''
+if [[ -n ${PS_POWERLINE} ]]
+then
+  PS_DELIM=''
+else
+  PS_DELIM=''
+fi
 
 FG_LRED='\[\e[91m\]'
 FG_GRN='\[\e[32m\]'
