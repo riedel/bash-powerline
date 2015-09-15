@@ -1,9 +1,21 @@
 # bash-powerline
 
+
 Powerline for Bash in pure Bash script. 
 
-![bash-powerline](https://raw.github.com/riobard/bash-powerline/master/screenshots/solarized-light-source-code-pro.png)
-![bash-powerline](https://raw.github.com/riobard/bash-powerline/master/screenshots/solarized-dark-monaco.png)
+![bash-powerline](https://raw.github.com/j1r1k/bash-powerline/master/screenshots/user.png)
+![bash-powerline](https://raw.github.com/j1r1k/bash-powerline/master/screenshots/root.png)
+
+## Notes for this branch
+
+* Rewritten so that PS1 is assigned and calls functions internally, not that PS1 is assigned by a function
+  * This was causing problems in some interactive programs (emerge)
+* Added current directory shortening (pwds function)
+* Added powerline triangle delimiter
+* Color scheme (green hostname for regular user, red for root)
+* Symbol ($ for user, # for root) changes color based on return code of last command
+* Simplified git ahead and behind parsing
+* Coloring is not using tput for better compatibility
 
 ## Features
 
@@ -12,10 +24,11 @@ Powerline for Bash in pure Bash script.
 * Git branch: display "+" symbol when current branch is changed but uncommited
 * Git branch: display "⇡" symbol and the difference in the number of commits when the current branch is ahead of remote (see screenshot)
 * Git branch: display "⇣" symbol and the difference in the number of commits when the current branch is behind of remote (see screenshot)
-* Platform-dependent prompt symbol for OS X and Linux (see screenshots)
 * Color code for the previously failed command
-* Fast execution (no noticable delay)
-* No need for patched fonts
+* Even faster execution (no noticable delay)
+* No need for patched fonts (if user changes PS_DELIM variable)
+* Current directory shortening to predefined limit
+* Hostname coloring based on root/non-root
 
 
 ## Installation
@@ -28,12 +41,6 @@ And source it in your `.bashrc`
 
     source ~/.bash-powerline.sh
 
-For best result, use [Solarized
-colorscheme](https://github.com/altercation/solarized) for your terminal
-emulator. Or hack your own colorscheme by modifying the script. It's really
-easy.
-
-
 ## Why?
 
 This script is largely inspired by
@@ -43,12 +50,6 @@ write and maintain than Bash scripts, but for my simple cases I find Bash
 scripts to be manageable. However, invoking the Python interpreter each time to
 draw the shell prompt introduces a noticable delay. I hate delays. So I decided
 to port just the functionalities I need to pure Bash script instead. 
-
-The other issue is that I don't like the idea of requiring patched fonts for
-this to work. The font patching mechanism from the original Powerline does not
-work with the bitmap font (Apple Monaco without anti-aliasing) I use on
-non-retina screens. I'd rather stick with existing unicode symbols in the fonts.
-
 
 ## See also
 * [powerline](https://github.com/Lokaltog/powerline): Unified Powerline
@@ -62,3 +63,4 @@ non-retina screens. I'd rather stick with existing unicode symbols in the fonts.
   Powerline. 
 * [emacs powerline](https://github.com/milkypostman/powerline): Powerline for
   Emacs
+* [bash-powerline](https://github.com/riobard/bash-powerline): Original implementation
