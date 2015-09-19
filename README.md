@@ -6,13 +6,12 @@ Powerline for Bash in pure Bash script.
 ![bash-powerline](https://raw.github.com/j1r1k/bash-powerline/master/screenshots/user.png)
 ![bash-powerline](https://raw.github.com/j1r1k/bash-powerline/master/screenshots/root.png)
 
-## Notes for this branch
+## Notes for this particular branch
 
 * Rewritten so that PS1 is assigned and calls functions internally, not that PS1 is assigned by a function
   * This was causing problems in some interactive programs (emerge)
-* Added current directory shortening (pwds function)
-* Added powerline triangle delimiter
-* Color scheme (green hostname for regular user, red for root)
+* Added current directory shortening (pwds function) - this can be parametrized
+* Using powerline symbols (requires patched fonts, unless amended)
 * Symbol ($ for user, # for root) changes color based on return code of last command
 * Simplified git ahead and behind parsing
 * Coloring is not using tput for better compatibility
@@ -26,7 +25,6 @@ Powerline for Bash in pure Bash script.
 * Git branch: display "⇣" symbol and the difference in the number of commits when the current branch is behind of remote (see screenshot)
 * Color code for the previously failed command
 * Even faster execution (no noticable delay)
-* No need for patched fonts (if user changes PS_DELIM variable)
 * Current directory shortening to predefined limit
 * Hostname coloring based on root/non-root
 
@@ -35,11 +33,11 @@ Powerline for Bash in pure Bash script.
 
 Download the Bash script
 
-    curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerline.sh > ~/.bash-powerline.sh
+    curl https://raw.githubusercontent.com/j1r1k/bash-powerline/master/bash-powerline.sh > ~/.bashrc.theme.sh
 
 And source it in your `.bashrc`
 
-    source ~/.bash-powerline.sh
+    source ~/.bashrc.theme.sh
 
 ## Why?
 
