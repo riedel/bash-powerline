@@ -14,20 +14,6 @@ __powerline() {
     readonly MAX_PATH_LENGTH=30
     readonly PS_DELIM=''
 
-    # FG_LRED='\[\e[91m\]'
-    # FG_GRN='\[\e[32m\]'
-    # FG_LBLU='\[\e[94m\]'
-    # FG_WHT='\[\e[97m\]'
-
-    # BG_LRED='\[\e[101m\]'
-    # BG_GRN='\[\e[42m\]'
-    # BG_LBLU='\[\e[104m\]'
-    # BG_WHT='\[\e[107m\]'
-
-    # RESET='\[\e[0m\]'
-    # INVERT='\[\e[7m\]'
-    # BOLD='\[\e[1m\]'
-
     # Unicode symbols
     readonly PS_SYMBOL_DARWIN=''
     readonly PS_SYMBOL_LINUX='$'
@@ -37,7 +23,6 @@ __powerline() {
     # readonly GIT_BRANCH_CHANGED_SYMBOL='±'
     readonly GIT_NEED_PUSH_SYMBOL='⇡'
     readonly GIT_NEED_PULL_SYMBOL='⇣'
-
 
     # This is working for me, but I need to figure out
     # a good way to indicate whether we should use
@@ -60,8 +45,8 @@ __powerline() {
     # Solarized colorscheme
     readonly FG_BASE03="\[$(tput setaf 8)\]"
     readonly FG_BASE02="\[$(tput setaf 0)\]"
-    readonly FG_BASE01="\[$(tput setaf 10)\]"
-    readonly FG_BASE00="\[$(tput setaf 11)\]"
+    readonly FG_BASE01="\[$(tput setaf 7)\]"
+    readonly FG_BASE00="\[$(tput setaf 10)\]"
     readonly FG_BASE0="\[$(tput setaf 12)\]"
     readonly FG_BASE1="\[$(tput setaf 14)\]"
     readonly FG_BASE2="\[$(tput setaf 7)\]"
@@ -69,8 +54,8 @@ __powerline() {
 
     readonly BG_BASE03="\[$(tput setab 8)\]"
     readonly BG_BASE02="\[$(tput setab 0)\]"
-    readonly BG_BASE01="\[$(tput setab 10)\]"
-    readonly BG_BASE00="\[$(tput setab 11)\]"
+    readonly BG_BASE01="\[$(tput setab 7)\]"
+    readonly BG_BASE00="\[$(tput setab 10)\]"
     readonly BG_BASE0="\[$(tput setab 12)\]"
     readonly BG_BASE1="\[$(tput setab 14)\]"
     readonly BG_BASE2="\[$(tput setab 7)\]"
@@ -113,45 +98,30 @@ __powerline() {
 
 
     if (hash git &> /dev/null); then
-    __is_git_branch() {
-          git rev-parse --is-inside-work-tree &> /dev/null
-          return $?
-      }
-     else 
-    __is_git_branch() {
-	    return 1
-     }
-     fi
-
-
     __git_info() {
-        if (__is_git_branch); then
-
-        # [ -x "$(which git)" ] || return    # git not found
-        # # local git_eng="env LANG=C git"   # force git output in English to make our work easier
-
-            local git="env git"
-
-            # get current branch name or short SHA1 hash for detached head
-            local branch="$($git symbolic-ref --short HEAD 2>/dev/null || $git describe --tags --always 2>/dev/null)"
-            [ -n "$branch" ] || return  # git branch not found
-
-            local marks
-
-            # branch is modified?
-            [ -n "$($git status --porcelain 2>/dev/null)" ] && marks+=" $GIT_BRANCH_CHANGED_SYMBOL"
-
-            # how many commits local branch is ahead/behind of remote?
-            local stat="$($git status --porcelain --branch 2>/dev/null | grep '^##' | grep -o '\[.\+\]$')"
-            local aheadN="$(echo $stat | grep -o 'ahead [[:digit:]]\+' | grep -o '[[:digit:]]\+')"
-            local behindN="$(echo $stat | grep -o 'behind [[:digit:]]\+' | grep -o '[[:digit:]]\+')"
-            [ -n "$aheadN" ] && marks+=" $GIT_NEED_PUSH_SYMBOL$aheadN"
-            [ -n "$behindN" ] && marks+=" $GIT_NEED_PULL_SYMBOL$behindN"
-
-            # print the git branch segment without a trailing newline
-            printf "${GIT_BRANCH_SYMBOL}${branch}${marks} "
-        fi
+      local status="$(git 2>/dev/null status --porcelain --branch | \
+      sed -n -e 's/##\(.*\)\.\.\.[^\[]*/\1 /' \
+      -e 's/ *behind \([0-9]*\)/⇣\1/'  \
+      -e 's/ *ahead \([0-9]*\)/⇡\1/' \
+      -e '1p' \
+      -e 's/^ *[UDCMA].*$/+/p'\
+      -e'/^+/q'\
+      -e'/^\?/q'
+      )"
+    if [ "x" != "x$status"  ]; then
+      printf "$BG_BASE01$FG_BASE00$PROMPT_DIVIDER$RESET"
+      printf "$BG_BASE01$FG_BASE1 ${status}$RESET"|tr '\n' ' '
+      printf "$BG_EXIT$FG_BASE01"
+    else
+      printf "$BG_EXIT$FG_BASE00"
+    fi
     }
+    else 
+    __git_info() {
+      printf "$BG_EXIT$FG_BASE00"
+    }
+    fi
+
 
     __virtualenv() {
         # Copied from Python virtualenv's activate.sh script.
@@ -276,13 +246,8 @@ __powerline() {
     PS1+="$BG_BASE0$FG_BASE3 $(__getpwd) $RESET"
 
     # git status
-    if (__is_git_branch); then
-      PS1+="$BG_BASE01$FG_BASE00$PROMPT_DIVIDER$RESET"
-      PS1+="$BG_BASE01$FG_BASE1 $(__git_info) $RESET"
-      PS1+="$BG_EXIT$FG_BASE01$PROMPT_DIVIDER$RESET"
-    else
-      PS1+="$BG_EXIT$FG_BASE00$PROMPT_DIVIDER$RESET"
-    fi
+
+    PS1+="$(__git_info)$PROMPT_DIVIDER$RESET"
     # segment transition
     PS1+="$FG_EXIT$PROMPT_DIVIDER$RESET "
   }
