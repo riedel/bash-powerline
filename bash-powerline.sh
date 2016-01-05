@@ -99,26 +99,17 @@ __powerline() {
 
     if (hash git &> /dev/null); then
     __git_info() {
-      local status="$(git 2>/dev/null status --porcelain --branch | \
-      sed -n -e 's/##\(.*\)\.\.\.[^\[]*/\1 /' \
-      -e 's/ *behind \([0-9]*\)/⇣\1/'  \
-      -e 's/ *ahead \([0-9]*\)/⇡\1/' \
-      -e '1p' \
-      -e 's/^ *[UDCMA].*$/+/p'\
-      -e'/^+/q'\
-      -e'/^\?/q'
-      )"
-    if [ "x" != "x$status"  ]; then
-      printf "$BG_BASE01$FG_BASE00$PROMPT_DIVIDER$RESET"
-      printf "$BG_BASE01$FG_BASE1 ${status}$RESET"|tr '\n' ' '
-      printf "$BG_EXIT$FG_BASE01"
-    else
-      printf "$BG_EXIT$FG_BASE00"
-    fi
+	    git 2>/dev/null status --porcelain --branch |  sed -n -e '
+	    s/##\(.*\)\.\.\.[^\[]*/'"$PROMPT_DIVIDER$GIT_BRANCH_SYMBOL"'\1 /;
+	    s/ *behind \([0-9]*\)/⇣\1/;
+	    s/ *ahead \([0-9]*\)/⇡\1/;1{h};
+	    s/^ *[UDCMA].*$/+/;
+	    /^+/{H;x;s/[\n ]//g;p;q};
+	    /^\?/{x;s/[\n ]//;p;q}'
     }
     else 
     __git_info() {
-      printf "$BG_EXIT$FG_BASE00"
+      printf ""
     }
     fi
 
@@ -138,121 +129,54 @@ __powerline() {
         fi
     }
 
-    # __pwd() {
-    #     # Use ~ to represent $HOME prefix
-    #     local pwd=$(pwd | sed -e "s|^$HOME|~|")
-    #     if [[ ( $pwd = ~\/*\/* || $pwd = \/*\/*/* ) && ${#pwd} > $MAX_PATH_LENGTH ]]; then
-    #         local IFS='/'
-    #         read -ra split <<< "$pwd"
-    #         if [[ $pwd = ~* ]]; then
-    #             pwd="~/.../${split[-1]}"
-    #         else
-    #             pwd="/${split[1]}/.../${split[-1]}"
-    #         fi
-    #     fi
-    #     printf "$pwd"
-    # }
 
     __getpwd() {
-        local my_pwd=${PWD#$HOME}
-	[[ "$PWD" != "$my_pwd" ]] &&  my_pwd="~$my_pwd"
-
-        # get an array of directories
-        # local split=(${my_pwd//\// })
-        # ???
-        local oIFS=$IFS
-        local IFS='/'
-        read -ra split <<< "$my_pwd"
-        IFS=$oIFS
-
-        # count how many backslashes
-        local pathDepth=${#split[@]}
-
-        # calculate index of last element
-        lastPosition=$((pathDepth-1))
-
-        # Substitude '  ' for instances of '/'
-        my_pwd=${my_pwd//\// }
-
-        if [[ $my_pwd = ~* ]]; then
-          # shorten path if more than 2 directories lower than home
-          if [[ $pathDepth > $max_path_depth ]]; then
-            my_pwd="~  ...  ${split[lastPosition]}"
-          fi
-        else
-          # In other than home, shorten path when greater than 3
-          # directories deep.
-          if [[ $pathDepth > $max_path_depth ]]; then
-            my_pwd="/  ${split[1]}   ...   ${split[lastPosition]}"
-          else
-            # append a backslash to the front of pwd
-            my_pwd="/$my_pwd"
-          fi
-        fi
-        echo -n "$my_pwd"
+        local my_pwd=${1/#"$HOME"/\~}
+        echo -n "${my_pwd//\// }"
       }
 
 
     ps1() {
-    #     # Check the exit code of the previous command and display different
-    #     # colors in the prompt accordingly.
-    #     if [ $? -eq 0 ]; then
-    #         local BG_EXIT="$BG_GREEN"
-    #     else
-    #         local BG_EXIT="$BG_RED"
-    #     fi
-
-    #     PS1=""
-    #     PS1+="$BG_BASE0$FG_BASE3$(__virtualenv)$RESET"
-    #     # PS1+="$BG_BASE1$FG_BASE3 $(__pwd) $RESET"
-    #     # path
-    #     PS1+="$BG_BASE0$FG_BASE3 $(__getpwd) $RESET_COLORS"
-    #     PS1+="$BG_BLUE$FG_BASE3\$(__git_info)$RESET"
-    #     PS1+="$BG_EXIT$FG_BASE3 $PS_SYMBOL $RESET "
-    # }
-
-    # PROMPT_COMMAND=ps1
-
-    # Check the exit code of the previous command and display different
-    # colors in the prompt accordingly.
     if [ $? -ne 0 ]; then
-      local BG_EXIT="$BG_RED"
-      local FG_EXIT="$FG_RED"
+      BG_EXIT="${BG_RED#\\[}"
+      FG_EXIT="${FG_RED#\\[}"
     else
-      local BG_EXIT="$BG_GREEN"
-      local FG_EXIT="$FG_GREEN"
+      BG_EXIT="${BG_GREEN#\\[}"
+      FG_EXIT="${FG_GREEN#\\[}"
     fi
-
-    PS1=""
-
-    # username
-    if [[ $EUID == 0 ]]; then
-      PS1+="$BG_RED$FG_BASE3 \u $RESET"
-      PS1+="$BG_BASE0$FG_RED$PROMPT_DIVIDER$RESET"
-    else
-    if [[ $OSTYPE == "cygwin" ]] && net session &> /dev/null; then
-      PS1+="$BG_RED$FG_BASE3 \u $RESET"
-      PS1+="$BG_BASE0$FG_RED$PROMPT_DIVIDER$RESET"
-    else
-      PS1+="$BG_BLUE$FG_BASE3 \u $RESET"
-      PS1+="$BG_BASE00$FG_BLUE$PROMPT_DIVIDER$RESET"
-    fi
-    fi
-
-    PS1+="$BG_BASE0$FG_BASE3$(__virtualenv)$RESET"
-
-    # path
-    # PS1+="$BG_BASE00$FG_BASE3 $(__getpwd) $RESET"
-    PS1+="$BG_BASE0$FG_BASE3 $(__getpwd) $RESET"
-
-    # git status
-
-    PS1+="$(__git_info)$PROMPT_DIVIDER$RESET"
-    # segment transition
-    PS1+="$FG_EXIT$PROMPT_DIVIDER$RESET "
+    BG_EXIT="${BG_EXIT%\\]}"
+    FG_EXIT="${FG_EXIT%\\]}"
   }
 
+  PS1=""
+
+  # username
+  if [[ $EUID == 0 ]]; then
+	  PS1+="$BG_RED$FG_BASE3 \u $RESET"
+	  PS1+="$BG_BASE0$FG_RED$PROMPT_DIVIDER$RESET"
+  else
+	  if [[ $OSTYPE == "cygwin" ]] && net session &> /dev/null; then
+		  PS1+="$BG_RED$FG_BASE3 \u $RESET"
+		  PS1+="$BG_BASE0$FG_RED$PROMPT_DIVIDER$RESET"
+	  else
+		  PS1+="$BG_BLUE$FG_BASE3 \u $RESET"
+		  PS1+="$BG_BASE00$FG_BLUE$PROMPT_DIVIDER$RESET"
+	  fi
+  fi
+
+  PS1+="$BG_BASE0$FG_BASE3$(__virtualenv)$RESET"
+
+  # path
+  # PS1+="$BG_BASE00$FG_BASE3 $(__getpwd) $RESET"
+  PS1+="$BG_BASE0$FG_BASE3 "'$(__getpwd \w)'" $RESET"
+
+  # git status
+  PS1+="$BG_BASE01$FG_BASE00"'$(__git_info)'"$FG_BASE01"'$BG_EXIT'"$PROMPT_DIVIDER$RESET"
+  # segment transition
+  PS1+='$FG_EXIT'"$PROMPT_DIVIDER$RESET "
+
   PROMPT_COMMAND=ps1
+  PROMPT_DIRTRIM=2
 }
 
 __powerline
