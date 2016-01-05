@@ -127,18 +127,23 @@ __powerline() {
         echo -n "${my_pwd//\// }"
       }
 
+    __removezero() {
+        echo ${1/#0}
+      }
 
-    ps1() {
-    if [ $? -ne 0 ]; then
-      BG_EXIT="$BG_RED"
-      FG_EXIT="$FG_RED"
+    __save_ret() {
+	    __ret=$?
+  }
+
+  __getret() {
+    if [ $1 -ne 0 ]; then
+      [ $2 -ne 1 ] && echo "$BG_RED" || echo "$FG_RED"
     else
-      BG_EXIT="$BG_GREEN"
-      FG_EXIT="$FG_GREEN"
+      [ $2 -ne 1 ] && echo "$BG_GREEN" || echo "$FG_GREEN"
     fi
   }
 
-  PS1=""
+  PS1=''
 
   # username
   if [[ $EUID == 0 ]]; then
@@ -170,13 +175,16 @@ __powerline() {
 
   PS1+='$(__git_info)'
 
-  PS1+="\[$RESET$FG_BASE2"'$BG_EXIT'"\]$PROMPT_DIVIDER"
+  PS1+="\[$RESET$FG_BASE2\]"
+  PS1+='\[$(__getret $(($__ret+0)) 2 )\]'
+  PS1+="$PROMPT_DIVIDER"
   # segment transition
-  PS1+='\[$RESET$FG_EXIT\]'
+  PS1+='$(__removezero \j)'
+  PS1+="\[$RESET\]"
+  PS1+='\[$(__getret $(($__ret+0)) 1 )\]'
   PS1+="$PROMPT_DIVIDER\[$RESET\]"
 
-  PROMPT_COMMAND=ps1
-  PROMPT_DIRTRIM=2
+  PROMPT_COMMAND="__save_ret;$PROMPT_COMMAND"
 }
 
 __powerline
