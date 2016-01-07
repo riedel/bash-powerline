@@ -27,53 +27,24 @@ __powerline() {
     # This is working for me, but I need to figure out
     # a good way to indicate whether we should use
     # powerline-fonts or not.
-    if [[ $TERM = "xterm-16color" ]]; then
-        # use standard fonts
-        readonly PROMPT_DIVIDER=' '
-        readonly PWD_DIVIDER='/'
-        readonly GIT_BRANCH_SYMBOL='⑂'
 
-    else # use powerline-fonts
-        readonly PROMPT_DIVIDER=''
-        readonly PWD_DIVIDER='/'
-        readonly GIT_BRANCH_SYMBOL=''
-    fi
+    readonly PROMPT_DIVIDER=''
+    readonly PWD_DIVIDER='/'
+    readonly GIT_BRANCH_SYMBOL=''
 
 
-    # Solarized colorscheme
-    readonly FG_BASE03="$(tput setaf 8)"
-    readonly BG_BASE03="$(tput setab 8)"
+    # colorscheme
 
-    readonly FG_BASE02="$(tput setaf 0)"
-    readonly BG_BASE02="$(tput setab 0)"
-
-    readonly FG_BASE01="$(tput setaf 7)"
-    readonly BG_BASE01="$(tput setab 7)"
-
-    readonly FG_BASE00="$(tput setaf 9)"
-    readonly BG_BASE00="$(tput setab 9)"
-
-    readonly BG_BASE0="$(tput setab 3)"
-    readonly FG_BASE0="$(tput setaf 3)"
-
-    readonly FG_BASE1="$(tput setaf 4)"
-    readonly BG_BASE1="$(tput setab 4)"
-
-    readonly FG_BASE2="$(tput setaf 7)"
-    readonly BG_BASE2="$(tput setab 7)"
-    
-    readonly FG_BASE3="$(tput setaf 5)"
-    readonly BG_BASE3="$(tput setab 5)"
-
-
-    readonly FG_YELLOW="$(tput setaf 3)"
-    readonly FG_ORANGE="$(tput setaf 9)"
+    readonly FG_BLACK="$(tput setaf 0)"
     readonly FG_RED="$(tput setaf 1)"
-    readonly FG_MAGENTA="$(tput setaf 5)"
-    readonly FG_VIOLET="$(tput setaf 13)"
-    readonly FG_BLUE="$(tput setaf 4)"
-    readonly FG_CYAN="$(tput setaf 6)"
     readonly FG_GREEN="$(tput setaf 2)"
+    readonly FG_YELLOW="$(tput setaf 3)"
+    readonly FG_BLUE="$(tput setaf 4)"
+    readonly FG_MAGENTA="$(tput setaf 5)"
+    readonly FG_CYAN="$(tput setaf 6)"
+    readonly FG_WHITE="$(tput setaf 7)"
+    readonly FG_ORANGE="$(tput setaf 9)"
+    readonly FG_VIOLET="$(tput setaf 13)"
 
     readonly BG_YELLOW="$(tput setab 3)"
     readonly BG_ORANGE="$(tput setab 9)"
@@ -82,6 +53,7 @@ __powerline() {
     readonly BG_VIOLET="$(tput setab 13)"
     readonly BG_BLUE="$(tput setab 4)"
     readonly BG_CYAN="$(tput setab 6)"
+    readonly BG_WHITE="$(tput setab 7)"
     readonly BG_GREEN="$(tput setab 2)"
 
     readonly DIM="$(tput dim)"
@@ -89,56 +61,71 @@ __powerline() {
     readonly RESET="$(tput sgr0)"
     readonly BOLD="$(tput bold)"
 
+
+    readonly BG_BASE0=$BG_BLUE
+    readonly FG_BASE0=$FG_BLUE
+
+    readonly FG_BASE00=$FG_WHITE
+
+    readonly FG_BASE1=$FG_WHITE
+    readonly BG_BASE1=$BG_WHITE
+
+    readonly FG_BASE01=$FG_BLACK
+
+    readonly FG_BASE2=$FG_MAGENTA
+    readonly BG_BASE2=$BG_MAGENTA
+
+    readonly FG_BASE02=$FG_WHITE
+
     # what OS?
     case "$(uname)" in
-        Darwin)
-            readonly PS_SYMBOL=$PS_SYMBOL_DARWIN
-            ;;
-        Linux)
-            readonly PS_SYMBOL=$PS_SYMBOL_LINUX
-            ;;
-        *)
-            readonly PS_SYMBOL=$PS_SYMBOL_OTHER
+	    Darwin)
+		    readonly PS_SYMBOL=$PS_SYMBOL_DARWIN
+		    ;;
+	    Linux)
+		    readonly PS_SYMBOL=$PS_SYMBOL_LINUX
+		    ;;
+	    *)
+		    readonly PS_SYMBOL=$PS_SYMBOL_OTHER
     esac
 
 
     if (hash git &> /dev/null); then
-    __git_info() {
-	    git 2>/dev/null status --porcelain --branch |\
-	   sed -n -e '
-	    s/##\s\+\(.*\)\.\.\.[^\[]*/'" $GIT_BRANCH_SYMBOL"'\1/;
-	    s/ *behind \([0-9]*\)/⇣\1/;
-	    s/ *ahead \([0-9]*\)/⇡\1/;1{h};
-	    s/^ *[UDCMA].*$/+/;
-	    /^+/{H;x;s/\n//g;p;q};
-	    /^\?/{x;p;q}
-	    '
-    }
+	    __git_info() {
+		    git 2>/dev/null status --porcelain --branch |\
+			    sed -n -e '
+		    1{s/##\s\+\([^\.]*\)\.*[^\[]*/'" $GIT_BRANCH_SYMBOL"'\1/;
+		    s/ *behind \([0-9]*\)/⇣\1/;
+		    s/ *ahead \([0-9]*\)/⇡\1/;
+		    h;d};
+		    /^\?/{x;p;q}
+		    /^ *[UDCMA]/{H;x;s/\n.*$/'"$GIT_BRANCH_CHANGED_SYMBOL"'/;p;q};'
+	    }
     else 
-    __git_info() {
-      printf ""
-    }
+	    __git_info() {
+		    printf ""
+	    }
     fi
 
 
 
     __getpwd() {
-        local my_pwd=${1/#"$HOME"/\~}
-        echo -n "${my_pwd//\// }"
-      }
+	    local my_pwd=${1/#"$HOME"/\~}
+	    echo -n "${my_pwd//\// }"
+    }
 
     __removezero() {
-        echo ${1/#0}
-      }
+	    echo ${1/#0}
+    }
 
     __save_ret() {
 	    __ret=$?
-  }
+    }
 
-  __getret() {
-    if [ $1 -ne 0 ]; then
-      [ $2 -ne 1 ] && echo "$BG_RED" || echo "$FG_RED"
-    else
+    __getret() {
+	    if [ $1 -ne 0 ]; then
+		    [ $2 -ne 1 ] && echo "$BG_RED" || echo "$FG_RED"
+	    else
       [ $2 -ne 1 ] && echo "$BG_GREEN" || echo "$FG_GREEN"
     fi
   }
@@ -149,7 +136,7 @@ __powerline() {
   if [[ $EUID == 0 ]]; then
 	  PS1+="\[\e]0;[root]\w\a\]"
 
-	  PS1+="\[$BG_RED$FG_BASE3\] \u \[$RESET\]"
+	  PS1+="\[$BG_RED$FG_BASE00\] \u \[$RESET\]"
 	  PS1+="\[$RESET$BG_BASE0$FG_RED\]$PROMPT_DIVIDER"
   else
 	  if [[ $OSTYPE == "cygwin" ]] && net session &> /dev/null; then
