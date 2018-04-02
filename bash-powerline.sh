@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-__powerline() {
-
+__powerline_colorscheme(){
     ## standard fonts
     # ▷ ◣ ▶︎ ➤ 〉  $ % ⑂ + ⇡ ⇣
     ## for powerline patched fonts
@@ -88,18 +87,25 @@ __powerline() {
 	    *)
 		    readonly PS_SYMBOL=$PS_SYMBOL_OTHER
     esac
+}
+__powerline() {
+    __powerline_colorscheme
+
+    hash /usr/bin/timeout
+    hash sed 
 
 
-    if (hash git &> /dev/null); then
+    if hash /usr/bin/git &> /dev/null; then
 	    __git_info() {
-		    git 2>/dev/null status --porcelain --branch |\
+		    /usr/bin/git 2>/dev/null status --ignore-submodules --porcelain --branch -uno |\
 			    sed -n -e '
 		    1{s/##\s\+\([^\.]*\)\.*[^\[]*/'" $GIT_BRANCH_SYMBOL"'\1/;
 		    s/ *behind \([0-9]*\)/⇣\1/;
 		    s/ *ahead \([0-9]*\)/⇡\1/;
-		    h;d};
-		    /^\?/{x;p;q}
-		    /^ *[UDCMA]/{H;x;s/\n.*$/'"$GIT_BRANCH_CHANGED_SYMBOL"'/;p;q};'
+		    h;};
+		    /^ *[UDCMA]/{H;x;s/\n.*$/'"$GIT_BRANCH_CHANGED_SYMBOL"'/;p;q};
+		    ${H;p};
+		    '
 	    }
     else 
 	    __git_info() {
@@ -124,9 +130,9 @@ __powerline() {
 
     __getret() {
 	    if [ $1 -ne 0 ]; then
-		    [ $2 -ne 1 ] && echo "$BG_RED" || echo "$FG_RED"
+		    [ $2 -ne 1 ] && echo "$BG_RED" || echo  "$FG_RED"
 	    else
-      [ $2 -ne 1 ] && echo "$BG_GREEN" || echo "$FG_GREEN"
+      		    [ $2 -ne 1 ] && echo  "$BG_GREEN" || echo "$FG_GREEN"
     fi
   }
 
@@ -136,42 +142,41 @@ __powerline() {
   if [[ $EUID == 0 ]]; then
 	  PS1+="\[\e]0;[root]\w\a\]"
 
-	  PS1+="\[$BG_RED$FG_BASE00\] \u \[$RESET\]"
+	  PS1+="\[$BG_RED$FG_BASE00\] \u "
 	  PS1+="\[$RESET$BG_BASE0$FG_RED\]$PROMPT_DIVIDER"
   else
 	  if [[ $OSTYPE == "cygwin" ]] && net session &> /dev/null; then
 		  PS1+="\[\e]0;[root]\w\a\]"
 
-		  PS1+="\[$BG_RED$FG_BASE00\] \u \[$RESET\]"
+		  PS1+="\[$BG_RED$FG_BASE00\] \u "
 		  PS1+="\[$RESET$FG_RED$BG_BASE1\]$PROMPT_DIVIDER"
 	  else
 		  PS1+="\[\e]0;\w\a\]"
 
-		  PS1+="\[$BG_BASE0$FG_BASE00\] \u \[$RESET\]"
+		  PS1+="\[$BG_BASE0$FG_BASE00\] \u "
 		  PS1+="\[$RESET$FG_BASE0$BG_BASE1\]$PROMPT_DIVIDER"
 	  fi
   fi
 
   # path
   PS1+="\[$FG_BASE01\]"
-
   PS1+='$(__getpwd \w)'
 
   # git
   PS1+="\[$RESET$FG_BASE1$BG_BASE2\]$PROMPT_DIVIDER\[$FG_BASE02\]"
-
+  PS1+='${CONDA_DEFAULT_ENV:+($CONDA_DEFAULT_ENV) }'
   PS1+='$(__git_info)'
 
-  PS1+="\[$RESET$FG_BASE2\]"
-  PS1+='\[$(__getret $(($__ret+0)) 2 )\]'
-  PS1+="$PROMPT_DIVIDER"
+  PS1+="\[$RESET$FG_BASE2"
+  PS1+='$(__getret $(($__ret+0)) 2 )'
+  PS1+="\]$PROMPT_DIVIDER"
   # segment transition
   PS1+='$(__removezero \j)'
-  PS1+="\[$RESET\]"
-  PS1+='\[$(__getret $(($__ret+0)) 1 )\]'
-  PS1+="$PROMPT_DIVIDER\[$RESET\]"
+  PS1+="\[$RESET"
+  PS1+='$(__getret $(($__ret+0)) 1 )'
+  PS1+="\]$PROMPT_DIVIDER\[$RESET\]"
 
-  PROMPT_COMMAND="__save_ret;$PROMPT_COMMAND"
+  PROMPT_COMMAND="__save_ret;${PROMPT_COMMAND#__save_ret;}"
 }
 
 __powerline
