@@ -2,6 +2,8 @@
 
 Powerline for Bash in pure Bash script. 
 
+![bash-powerline](screenshots/user.png)
+
 ## Notes for this particular branch
 
 * Speed improvement for slow fork rates on cygwin
