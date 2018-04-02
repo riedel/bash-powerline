@@ -1,20 +1,14 @@
 # bash-powerline
 
-
 Powerline for Bash in pure Bash script. 
-
-![bash-powerline](https://raw.github.com/j1r1k/bash-powerline/master/screenshots/user.png)
-![bash-powerline](https://raw.github.com/j1r1k/bash-powerline/master/screenshots/root.png)
 
 ## Notes for this particular branch
 
-* Rewritten so that PS1 is assigned and calls functions internally, not that PS1 is assigned by a function
-  * This was causing problems in some interactive programs (emerge)
-* Added current directory shortening (pwds function) - this can be parametrized
-* Using powerline symbols (requires patched fonts, unless amended)
-* Symbol ($ for user, # for root) changes color based on return code of last command
-* Simplified git ahead and behind parsing
-* Coloring is not using tput for better compatibility
+* Speed improvement for slow fork rates on cygwin
+* Elevated user detection on cygwin 
+
+Original version: https://github.com/riobard/bash-powerline
+For more changes see: https://github.com/LeonardoGentile/bash-powerline
 
 ## Features
 
@@ -26,14 +20,14 @@ Powerline for Bash in pure Bash script.
 * Color code for the previously failed command
 * Even faster execution (no noticable delay)
 * Current directory shortening to predefined limit
-* Hostname coloring based on root/non-root
+* coloring based on root/non-root
 
 
 ## Installation
 
 Download the Bash script
 
-    curl https://raw.githubusercontent.com/j1r1k/bash-powerline/master/bash-powerline.sh > ~/.bashrc.theme.sh
+    curl https://raw.githubusercontent.com/riedel/bash-powerline/master/bash-powerline.sh > ~/.bashrc.theme.sh
 
 And source it in your `.bashrc`
 
