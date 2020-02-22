@@ -145,7 +145,7 @@ __powerline() {
 	  PS1+="\[$BG_RED$FG_BASE00\] \u "
 	  PS1+="\[$RESET$BG_BASE0$FG_RED\]$PROMPT_DIVIDER"
   else
-	  if [[ $OSTYPE == "cygwin" ]] && net session &> /dev/null; then
+	  if [[ $OSTYPE == "cygwin" || $OSTYPE == "msys" ]] && net session &> /dev/null; then
 		  PS1+="\[\e]0;[root]\w\a\]"
 
 		  PS1+="\[$BG_RED$FG_BASE00\] \u "
